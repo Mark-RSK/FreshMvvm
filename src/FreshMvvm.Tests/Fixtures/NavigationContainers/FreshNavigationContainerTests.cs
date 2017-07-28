@@ -6,102 +6,104 @@ using NUnit.Framework;
 
 namespace FreshMvvm.Tests.Fixtures.NavigationContainers
 {
-	[TestFixture]
-	public class FreshNavigationContainerTests
-	{
-		[Test]
-		public void Test_Register_IFreshNavigationService()
-		{
-            var page = new MockContentPage(new MockContentPageModel());
+    [TestFixture]
+    public class FreshNavigationContainerTests
+    {
+        [Test]
+        public void Test_Register_IFreshNavigationService()
+        {
+            var page = new MockContentPage { BindingContext = new MockContentPageModel() };
 
-			var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(page);
-			var navigationService = FreshIoC.Container.Resolve<IFreshNavigationService>();
+            var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(page);
+            var navigationService = FreshIoC.Container.Resolve<IFreshNavigationService>(Constants.DefaultNavigationServiceName);
 
-			Assert.IsNotNull(navigationService);
-			Assert.AreEqual(navigation, navigationService);
-		}
+            Assert.IsNotNull(navigationService);
+            Assert.AreEqual(navigation, navigationService);
+        }
 
-		[Test]
-		public async Task Test_PushPage()
-		{
-			var mainPageViewModel = new MockFreshPageModel();
-			var mainPage = new MockContentPage(mainPageViewModel);
-			var detailsPage = new MockContentPage(mainPageViewModel);
-			var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
+        [Test]
+        public async Task Test_PushPage()
+        {
+            var mainPageViewModel = new MockFreshPageModel();
+            var mainPage = new MockContentPage { BindingContext = mainPageViewModel };
 
-			await navigation.PushPage(detailsPage, mainPageViewModel);
+            var detailsPage = new MockContentPage { BindingContext = mainPageViewModel };
 
-			var page = navigation.Navigation.NavigationStack.FirstOrDefault(p => p.Id.Equals(detailsPage.Id));
+            var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
 
-			Assert.IsNotNull(page);
-			Assert.AreSame(detailsPage, page);
-		}
+            await navigation.PushPage(detailsPage, mainPageViewModel);
 
-		[Test]
-		public async Task Test_PushPage_Modal()
-		{
-			var mainPageViewModel = new MockFreshPageModel();
-			var mainPage = new MockContentPage(mainPageViewModel);
-			var detailsPage = new MockContentPage(mainPageViewModel);
-			var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
+            var page = navigation.Navigation.NavigationStack.FirstOrDefault(p => p.Id.Equals(detailsPage.Id));
 
-			Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(0));
+            Assert.IsNotNull(page);
+            Assert.AreSame(detailsPage, page);
+        }
 
-			await navigation.PushPage(detailsPage, mainPageViewModel, true);
+        [Test]
+        public async Task Test_PushPage_Modal()
+        {
+            var mainPageViewModel = new MockFreshPageModel();
+            var mainPage = new MockContentPage { BindingContext = mainPageViewModel };
+            var detailsPage = new MockContentPage { BindingContext = mainPageViewModel };
+            var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
 
-			Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(1));
-		}
+            Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(0));
 
-		[Test]
-		public async Task Test_PopPage()
-		{
-			var mainPageViewModel = new MockFreshPageModel();
-			var mainPage = new MockContentPage(mainPageViewModel);
-			var detailsPage = new MockContentPage(mainPageViewModel);
-			var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
+            await navigation.PushPage(detailsPage, mainPageViewModel, true);
 
-			await navigation.PushPage(detailsPage, mainPageViewModel);
-			await navigation.PopPage();
+            Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(1));
+        }
 
-			var page = navigation.Navigation.NavigationStack.FirstOrDefault(p => p.Id.Equals(detailsPage.Id));
-			var firstPage = navigation.Navigation.NavigationStack.FirstOrDefault();
+        [Test]
+        public async Task Test_PopPage()
+        {
+            var mainPageViewModel = new MockFreshPageModel();
+            var mainPage = new MockContentPage { BindingContext = mainPageViewModel };
+            var detailsPage = new MockContentPage { BindingContext = mainPageViewModel };
+            var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
 
-			Assert.IsNull(page);
-			Assert.IsNotNull(firstPage);
-			Assert.AreSame(mainPage, firstPage);
-		}
+            await navigation.PushPage(detailsPage, mainPageViewModel);
+            await navigation.PopPage();
 
-		[Test]
-		public async Task Test_PopPage_Modal()
-		{
-			var mainPageViewModel = new MockFreshPageModel();
-			var mainPage = new MockContentPage(mainPageViewModel);
-			var detailsPage = new MockContentPage(mainPageViewModel);
-			var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
+            var page = navigation.Navigation.NavigationStack.FirstOrDefault(p => p.Id.Equals(detailsPage.Id));
+            var firstPage = navigation.Navigation.NavigationStack.FirstOrDefault();
 
-			await navigation.PushPage(detailsPage, mainPageViewModel, true);
+            Assert.IsNull(page);
+            Assert.IsNotNull(firstPage);
+            Assert.AreSame(mainPage, firstPage);
+        }
 
-			Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(1));
+        [Test]
+        public async Task Test_PopPage_Modal()
+        {
+            var mainPageViewModel = new MockFreshPageModel();
+            var mainPage = new MockContentPage { BindingContext = mainPageViewModel };
+            var detailsPage = new MockContentPage { BindingContext = mainPageViewModel };
+            var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
 
-			await navigation.PopPage(true);
+            await navigation.PushPage(detailsPage, mainPageViewModel, true);
 
-			Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(0));
-		}
+            Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(1));
 
-		[Test]
-		public async Task Test_PopToRoot()
-		{
-            var mainPage = new MockContentPage(new MockContentPageModel());
-			var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
+            await navigation.PopPage(true);
 
-			await navigation.PushPage(new MockContentPage(new MockContentPageModel()), new MockFreshPageModel());
-			await navigation.PushPage(new MockContentPage(new MockContentPageModel()), new MockFreshPageModel());
-			await navigation.PopToRoot();
+            Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(0));
+        }
 
-			var firstPage = navigation.Navigation.NavigationStack.FirstOrDefault();
+        [Test]
+        public async Task Test_PopToRoot()
+        {
+            var mainPage = new MockContentPage { BindingContext = new MockContentPageModel() };
+            var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
 
-			Assert.IsNotNull(firstPage);
-			Assert.AreSame(mainPage, firstPage);
-		}
-	}
+            await navigation.PushPage(new MockContentPage { BindingContext = new MockContentPageModel() }, new MockFreshPageModel());
+            await navigation.PushPage(new MockContentPage { BindingContext = new MockContentPageModel() }, new MockFreshPageModel());
+            await navigation.PopToRoot();
+
+            var firstPage = navigation.Navigation.NavigationStack.FirstOrDefault();
+
+            Assert.IsNotNull(firstPage);
+            Assert.AreSame(mainPage, firstPage);
+        }
+    }
 }

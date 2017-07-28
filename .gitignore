@@ -198,3 +198,4 @@ FakesAssemblies/
 *.lock.json
 
 src/\.droidres/
+*.DS_Store

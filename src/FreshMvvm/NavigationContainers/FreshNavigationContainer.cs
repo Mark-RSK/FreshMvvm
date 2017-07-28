@@ -18,6 +18,9 @@ namespace FreshMvvm.NavigationContainers
             : base(page)
         {
             var pageModel = page.GetModel();
+
+            if (pageModel == null) throw new InvalidCastException("BindingContext was not a FreshBasePageModel on this Page");
+
             pageModel.CurrentNavigationServiceName = navigationPageName;
             NavigationServiceName = navigationPageName;
             RegisterNavigation();
@@ -50,8 +53,8 @@ namespace FreshMvvm.NavigationContainers
 
         public virtual Task PopPage(bool modal = false, bool animate = true)
         {
-            return modal ? 
-                Navigation.PopModalAsync(animate) : 
+            return modal ?
+                Navigation.PopModalAsync(animate) :
                 Navigation.PopAsync(animate);
         }
 
