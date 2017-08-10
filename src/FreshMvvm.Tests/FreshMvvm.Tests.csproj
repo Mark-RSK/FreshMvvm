@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net4.6</TargetFramework>
+		<TargetFramework>net461</TargetFramework>
 		<PackageTargetFallback>portable-net45+win8+wpa81+wp8</PackageTargetFallback>
 		<DebugType>full</DebugType>
 	</PropertyGroup>
@@ -15,7 +15,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\FreshMvvm\FreshMvvm.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-	</ItemGroup>
+	 <ItemGroup>
+        <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+    </ItemGroup> 
 </Project>
