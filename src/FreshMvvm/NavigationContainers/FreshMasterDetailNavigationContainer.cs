@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using FreshMvvm.Base;
 using FreshMvvm.Extensions;
@@ -11,11 +10,11 @@ namespace FreshMvvm.NavigationContainers
 {
     public class FreshMasterDetailNavigationContainer : MasterDetailPage, IFreshNavigationService
     {
-        List<Page> _pagesInner = new List<Page> ();
-        Dictionary<string, Page> _pages = new Dictionary<string, Page> ();
+        List<Page> _pagesInner = new List<Page>();
+        Dictionary<string, Page> _pages = new Dictionary<string, Page>();
         ContentPage _menuPage;
-        ObservableCollection<string> _pageNames = new ObservableCollection<string> ();
-	ListView _listView = new ListView ();
+        ObservableCollection<string> _pageNames = new ObservableCollection<string>();
+        ListView _listView = new ListView();
 
         public Dictionary<string, Page> Pages { get; } = new Dictionary<string, Page>();
 
@@ -71,14 +70,16 @@ namespace FreshMvvm.NavigationContainers
 
         protected virtual void CreateMenuPage(string menuPageTitle, string menuIcon = null)
         {
-            _menuPage = new ContentPage ();
-            _menuPage.Title = menuPageTitle; 
-	    
+            _menuPage = new ContentPage();
+            _menuPage.Title = menuPageTitle;
+
             _listView.ItemsSource = _pageNames;
 
-            _listView.ItemSelected += (sender, args) => {
-                if (_pages.ContainsKey ((string)args.SelectedItem)) {
-                    Detail = _pages [(string)args.SelectedItem];
+            _listView.ItemSelected += (sender, args) =>
+            {
+                if (_pages.ContainsKey((string)args.SelectedItem))
+                {
+                    Detail = _pages[(string)args.SelectedItem];
                 }
 
                 IsPresented = false;
@@ -97,17 +98,24 @@ namespace FreshMvvm.NavigationContainers
             Master = navPage;
         }
 
-        public Task PushPage(Page page, FreshPageModel model, bool modal = false, bool animate = true)
+        public Task PushPage(Page page, bool modal = false, bool animate = true)
         {
-            return modal ? 
-                Navigation.PushModalAsync(CreateContainerPageSafe(page)) : 
+            return modal ?
+                Navigation.PushModalAsync(CreateContainerPageSafe(page)) :
                 (Detail as NavigationPage)?.PushAsync(page, animate);
         }
 
-        public Task PopPage(bool modal = false, bool animate = true)
+        public virtual Task PushPageModel<TPageModel>(bool modal = false, bool animate = true) where TPageModel : FreshPageModel
         {
-            return modal ? 
-                Navigation.PopModalAsync(animate) : 
+            Page page = FreshPageModelResolver.ResolvePageModel<TPageModel>();
+
+            return PushPage(page, modal, animate);
+        }
+
+        public Task Pop(bool modal = false, bool animate = true)
+        {
+            return modal ?
+                Navigation.PopModalAsync(animate) :
                 (Detail as NavigationPage)?.PopAsync(animate);
         }
 
@@ -122,7 +130,7 @@ namespace FreshMvvm.NavigationContainers
         {
             var master = Master as NavigationPage;
             master?.NotifyAllChildrenPopped();
-            
+
             foreach (var page in Pages.Values)
             {
                 var navigationPage = page as NavigationPage;

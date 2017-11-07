@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FreshMvvm.IoC;
 using FreshMvvm.IoC.TinyIoC;
 using TinyIoC;
@@ -12,16 +13,6 @@ namespace FreshMvvm.IOC
     {
         internal static TinyIoCContainer Current => TinyIoCContainer.Current;
 
-        public IRegisterOptions Register<TRegisterType>(TRegisterType instance, string name) where TRegisterType : class
-        {
-            return TinyIoCContainer.Current.Register(instance, name);
-        }
-
-        public IRegisterOptions Register<TRegisterType>(TRegisterType instance) where TRegisterType : class
-        {
-            return TinyIoCContainer.Current.Register(instance);
-        }
-
         public TResolveType Resolve<TResolveType>(string name) where TResolveType : class
         {
             return TinyIoCContainer.Current.Resolve<TResolveType>(name);
@@ -32,11 +23,31 @@ namespace FreshMvvm.IOC
             return TinyIoCContainer.Current.Resolve<TResolveType>();
         }
 
+        public IRegisterOptions Register<TRegisterType>(TRegisterType instance, string name) where TRegisterType : class
+        {
+            return TinyIoCContainer.Current.Register(instance, name);
+        }
+
+        public IRegisterOptions Register<TRegisterType>(TRegisterType instance) where TRegisterType : class
+        {
+            return TinyIoCContainer.Current.Register(instance);
+        }
+
         public IRegisterOptions Register<TRegisterType, TRegisterImplementation>()
             where TRegisterType : class
             where TRegisterImplementation : class, TRegisterType
         {
             return TinyIoCContainer.Current.Register<TRegisterType, TRegisterImplementation>();
+        }
+
+        public IRegisterOptions RegisterMultiple<TRegisterType>(IEnumerable<Type> instances) where TRegisterType : class
+        {
+            return TinyIoCContainer.Current.RegisterMultiple<TRegisterType>(instances);
+        }
+
+        public IRegisterOptions RegisterMultiple(Type registrationType, IEnumerable<Type> implementationTypes)
+        {
+            return TinyIoCContainer.Current.RegisterMultiple(registrationType, implementationTypes);
         }
 
         public object Resolve(Type resolveType)

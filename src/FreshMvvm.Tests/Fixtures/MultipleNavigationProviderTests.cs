@@ -78,8 +78,7 @@ namespace FreshMvvm.Tests.Fixtures
             var coreMethods = new PageModelNavigation(_page, _pageModel);
             coreMethods.PushPageModel<MockContentPageModel>();
 
-            _navigationMock.Received().PushPage(Arg.Any<Page>(),
-                Arg.Is<FreshPageModel>(o => o.CurrentNavigationServiceName == _pageModel.CurrentNavigationServiceName));
+            _navigationMock.Received().PushPage(Arg.Any<Page>());
         }
 
         /// <summary>
@@ -117,7 +116,7 @@ namespace FreshMvvm.Tests.Fixtures
             await PushSecondNavigationStack();
 
             //navigationService has push modal with new navigation service
-            await _navigationMock.Received().PushPage(_secondNavService, Arg.Any<FreshPageModel>(), true);
+            await _navigationMock.Received().PushPage(_secondNavService, true);
         }
 
         ///   - when a new navigation service is pushed then models stores the previous navigationname
@@ -159,7 +158,7 @@ namespace FreshMvvm.Tests.Fixtures
             await _navigationSecondPage.PopPageModel(true);
 
             //previousNavigation has pop modal called
-            await _navigationMock.Received().PopPage(true);
+            await _navigationMock.Received().Pop(true);
         }
 
 
@@ -178,7 +177,7 @@ namespace FreshMvvm.Tests.Fixtures
             await pageModelLatest.Navigation.PopModalNavigationService();
 
             //previousNavigation has pop modal called
-            await _navigationMock.Received().PopPage(true);
+            await _navigationMock.Received().Pop(true);
         }
 
         //TODO: test for this

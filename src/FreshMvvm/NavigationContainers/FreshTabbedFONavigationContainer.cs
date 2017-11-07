@@ -18,68 +18,75 @@ namespace FreshMvvm.NavigationContainers
         public TabbedPage FirstTabbedPage { get; }
         public IEnumerable<Page> TabbedPages => _tabs;
 
-        public FreshTabbedFONavigationContainer (string titleOfFirstTab) : this(titleOfFirstTab, Constants.DefaultNavigationServiceName)
-        {               
+        public FreshTabbedFONavigationContainer(string titleOfFirstTab) : this(titleOfFirstTab, Constants.DefaultNavigationServiceName)
+        {
         }
 
         public FreshTabbedFONavigationContainer(string titleOfFirstTab, string navigationServiceName) : base(new TabbedPage())
-        {           
+        {
             NavigationServiceName = navigationServiceName;
             RegisterNavigation();
             FirstTabbedPage = (TabbedPage)CurrentPage;
             FirstTabbedPage.Title = titleOfFirstTab;
         }
 
-        protected void RegisterNavigation ()
+        protected void RegisterNavigation()
         {
-            FreshIoC.Container.Register<IFreshNavigationService> (this, NavigationServiceName);
+            FreshIoC.Container.Register<IFreshNavigationService>(this, NavigationServiceName);
         }
 
-        public virtual Page AddTab<T> (string title, string icon, object data = null) where T : FreshPageModel
+        public virtual Page AddTab<T>(string title, string icon, object data = null) where T : FreshPageModel
         {
-            var page = FreshPageModelResolver.ResolvePageModel<T> (data);
-            page.GetModel ().CurrentNavigationServiceName = NavigationServiceName;
-            _tabs.Add (page);
+            var page = FreshPageModelResolver.ResolvePageModel<T>(data);
+            page.GetModel().CurrentNavigationServiceName = NavigationServiceName;
+            _tabs.Add(page);
 
-            var container = CreateContainerPageSafe (page);
+            var container = CreateContainerPageSafe(page);
             container.Title = title;
 
             if (!string.IsNullOrWhiteSpace(icon))
                 container.Icon = icon;
-            FirstTabbedPage.Children.Add (container);
+            FirstTabbedPage.Children.Add(container);
 
             return container;
         }
 
-        internal Page CreateContainerPageSafe (Page page)
+        internal Page CreateContainerPageSafe(Page page)
         {
             return page is NavigationPage || page is MasterDetailPage || page is TabbedPage
                 ? page
                 : CreateContainerPage(page);
         }
 
-        protected virtual Page CreateContainerPage (Page page)
+        protected virtual Page CreateContainerPage(Page page)
         {
             return page;
         }
 
-        public Task PushPage (Page page, FreshPageModel model, bool modal = false, bool animate = true)
+        public Task PushPage(Page page, bool modal = false, bool animate = true)
         {
-            return modal ? 
-                Navigation.PushModalAsync (CreateContainerPageSafe (page)) : 
-                Navigation.PushAsync (page);
+            return modal ?
+                Navigation.PushModalAsync(CreateContainerPageSafe(page)) :
+                Navigation.PushAsync(page);
         }
 
-        public Task PopPage (bool modal = false, bool animate = true)
+        public virtual Task PushPageModel<TPageModel>(bool modal = false, bool animate = true) where TPageModel : FreshPageModel
         {
-            return modal ? 
-                Navigation.PopModalAsync (animate) : 
-                Navigation.PopAsync (animate);
+            Page page = FreshPageModelResolver.ResolvePageModel<TPageModel>();
+
+            return PushPage(page, modal, animate);
         }
 
-        public Task PopToRoot (bool animate = true)
+        public Task Pop(bool modal = false, bool animate = true)
         {
-            return Navigation.PopToRootAsync (animate);
+            return modal ?
+                Navigation.PopModalAsync(animate) :
+                Navigation.PopAsync(animate);
+        }
+
+        public Task PopToRoot(bool animate = true)
+        {
+            return Navigation.PopToRootAsync(animate);
         }
 
         public string NavigationServiceName { get; }

@@ -31,7 +31,7 @@ namespace FreshMvvm.Tests.Fixtures.NavigationContainers
 
             var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
 
-            await navigation.PushPage(detailsPage, mainPageViewModel);
+            await navigation.PushPage(detailsPage);
 
             var page = navigation.Navigation.NavigationStack.FirstOrDefault(p => p.Id.Equals(detailsPage.Id));
 
@@ -49,7 +49,7 @@ namespace FreshMvvm.Tests.Fixtures.NavigationContainers
 
             Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(0));
 
-            await navigation.PushPage(detailsPage, mainPageViewModel, true);
+            await navigation.PushPage(detailsPage, true);
 
             Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(1));
         }
@@ -62,8 +62,8 @@ namespace FreshMvvm.Tests.Fixtures.NavigationContainers
             var detailsPage = new MockContentPage { BindingContext = mainPageViewModel };
             var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
 
-            await navigation.PushPage(detailsPage, mainPageViewModel);
-            await navigation.PopPage();
+            await navigation.PushPage(detailsPage);
+            await navigation.Pop();
 
             var page = navigation.Navigation.NavigationStack.FirstOrDefault(p => p.Id.Equals(detailsPage.Id));
             var firstPage = navigation.Navigation.NavigationStack.FirstOrDefault();
@@ -81,11 +81,11 @@ namespace FreshMvvm.Tests.Fixtures.NavigationContainers
             var detailsPage = new MockContentPage { BindingContext = mainPageViewModel };
             var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
 
-            await navigation.PushPage(detailsPage, mainPageViewModel, true);
+            await navigation.PushPage(detailsPage, true);
 
             Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(1));
 
-            await navigation.PopPage(true);
+            await navigation.Pop(true);
 
             Assert.That(navigation.Navigation.ModalStack.Count, Is.EqualTo(0));
         }
@@ -96,8 +96,8 @@ namespace FreshMvvm.Tests.Fixtures.NavigationContainers
             var mainPage = new MockContentPage { BindingContext = new MockContentPageModel() };
             var navigation = new FreshMvvm.NavigationContainers.FreshNavigationContainer(mainPage);
 
-            await navigation.PushPage(new MockContentPage { BindingContext = new MockContentPageModel() }, new MockFreshPageModel());
-            await navigation.PushPage(new MockContentPage { BindingContext = new MockContentPageModel() }, new MockFreshPageModel());
+            await navigation.PushPage(new MockContentPage { BindingContext = new MockContentPageModel() });
+            await navigation.PushPage(new MockContentPage { BindingContext = new MockContentPageModel() });
             await navigation.PopToRoot();
 
             var firstPage = navigation.Navigation.NavigationStack.FirstOrDefault();

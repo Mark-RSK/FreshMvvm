@@ -10,88 +10,96 @@ using Xamarin.Forms;
 
 namespace FreshMvvmSampleApp.Navigation
 {
-	/// <summary>
-	/// This is a sample custom implemented Navigation. It combines a MasterDetail and a TabbedPage.
-	/// </summary>
+    /// <summary>
+    /// This is a sample custom implemented Navigation. It combines a MasterDetail and a TabbedPage.
+    /// </summary>
     public class CustomImplementedNav : MasterDetailPage, IFreshNavigationService
-	{
-		FreshTabbedNavigationContainer _tabbedNavigationPage;
-		Page _contactsPage, _quotesPage;
+    {
+        FreshTabbedNavigationContainer _tabbedNavigationPage;
+        Page _contactsPage, _quotesPage;
 
-		public CustomImplementedNav ()
-		{	
-            NavigationServiceName = "CustomImplementedNav";
-			SetupTabbedPage ();
-			CreateMenuPage ("Menu");
-			RegisterNavigation ();
-		}
-
-		void SetupTabbedPage()
-		{
-			_tabbedNavigationPage = new FreshTabbedNavigationContainer ();
-			_contactsPage = _tabbedNavigationPage.AddTab<ContactListPageModel> ("Contacts", "contacts.png");
-			_quotesPage = _tabbedNavigationPage.AddTab<QuoteListPageModel> ("Quotes", "document.png");
-			Detail = _tabbedNavigationPage;
-		}
-
-		protected void RegisterNavigation()
-		{
-            FreshIoC.Container.Register<IFreshNavigationService> (this, NavigationServiceName);
-		}
-
-		protected void CreateMenuPage(string menuPageTitle)
-		{
-			var _menuPage = new ContentPage ();
-			_menuPage.Title = menuPageTitle;
-			var listView = new ListView();
-
-			listView.ItemsSource = new[] { "Contacts", "Quotes", "Modal Demo" };
-
-			listView.ItemSelected += async (sender, args) =>
-			{
-
-				switch ((string)args.SelectedItem) {
-				case "Contacts":
-					_tabbedNavigationPage.CurrentPage = _contactsPage;
-					break;
-				case "Quotes":
-					_tabbedNavigationPage.CurrentPage = _quotesPage;
-					break;
-				case "Modal Demo":
-                    var modalPage = FreshPageModelResolver.ResolvePageModel<ModalPageModel>();
-					await PushPage(modalPage, null, true);
-					break;
-				default:
-				break;
-				}
-
-				IsPresented = false;
-			};
-
-			_menuPage.Content = listView;
-
-			Master = new NavigationPage(_menuPage) { Title = "Menu" };
-		}
-
-        public virtual async Task PushPage (Page page, FreshPageModel model, bool modal = false, bool animated = true)
-		{
-			if (modal)
-                await Navigation.PushModalAsync (new NavigationPage(page), animated);
-			else
-                await ((NavigationPage)_tabbedNavigationPage.CurrentPage).PushAsync (page, animated); 
-		}
-
-        public virtual async Task PopPage (bool modal = false, bool animate = true)
-		{
-			if (modal)
-				await Navigation.PopModalAsync ();
-			else
-				await ((NavigationPage)_tabbedNavigationPage.CurrentPage).PopAsync (); 
-		}
-
-        public virtual async Task PopToRoot (bool animate = true)
+        public CustomImplementedNav()
         {
-            await ((NavigationPage)_tabbedNavigationPage.CurrentPage).PopToRootAsync (animate);
+            NavigationServiceName = "CustomImplementedNav";
+            SetupTabbedPage();
+            CreateMenuPage("Menu");
+            RegisterNavigation();
+        }
+
+        void SetupTabbedPage()
+        {
+            _tabbedNavigationPage = new FreshTabbedNavigationContainer();
+            _contactsPage = _tabbedNavigationPage.AddTab<ContactListPageModel>("Contacts", "contacts.png");
+            _quotesPage = _tabbedNavigationPage.AddTab<QuoteListPageModel>("Quotes", "document.png");
+            Detail = _tabbedNavigationPage;
+        }
+
+        protected void RegisterNavigation()
+        {
+            FreshIoC.Container.Register<IFreshNavigationService>(this, NavigationServiceName);
+        }
+
+        protected void CreateMenuPage(string menuPageTitle)
+        {
+            var _menuPage = new ContentPage();
+            _menuPage.Title = menuPageTitle;
+            var listView = new ListView();
+
+            listView.ItemsSource = new[] { "Contacts", "Quotes", "Modal Demo" };
+
+            listView.ItemSelected += async (sender, args) =>
+            {
+
+                switch ((string)args.SelectedItem)
+                {
+                    case "Contacts":
+                        _tabbedNavigationPage.CurrentPage = _contactsPage;
+                        break;
+                    case "Quotes":
+                        _tabbedNavigationPage.CurrentPage = _quotesPage;
+                        break;
+                    case "Modal Demo":
+                        var modalPage = FreshPageModelResolver.ResolvePageModel<ModalPageModel>();
+                        await PushPage(modalPage, true);
+                        break;
+                    default:
+                        break;
+                }
+
+                IsPresented = false;
+            };
+
+            _menuPage.Content = listView;
+
+            Master = new NavigationPage(_menuPage) { Title = "Menu" };
+        }
+
+        public virtual async Task PushPage(Page page, bool modal = false, bool animated = true)
+        {
+            if (modal)
+                await Navigation.PushModalAsync(new NavigationPage(page), animated);
+            else
+                await ((NavigationPage)_tabbedNavigationPage.CurrentPage).PushAsync(page, animated);
+        }
+
+        public virtual Task PushPageModel<TPageModel>(bool modal = false, bool animate = true) where TPageModel : FreshPageModel
+        {
+            Page page = FreshPageModelResolver.ResolvePageModel<TPageModel>();
+
+            return PushPage(page, modal, animate);
+        }
+
+        public virtual async Task Pop(bool modal = false, bool animate = true)
+        {
+            if (modal)
+                await Navigation.PopModalAsync();
+            else
+                await ((NavigationPage)_tabbedNavigationPage.CurrentPage).PopAsync();
+        }
+
+        public virtual async Task PopToRoot(bool animate = true)
+        {
+            await ((NavigationPage)_tabbedNavigationPage.CurrentPage).PopToRootAsync(animate);
         }
 
         public string NavigationServiceName { get; }
@@ -107,19 +115,21 @@ namespace FreshMvvmSampleApp.Navigation
             }
         }
 
-        public Task<FreshPageModel> SwitchSelectedRootPageModel<T> () where T : FreshPageModel
+        public Task<FreshPageModel> SwitchSelectedRootPageModel<T>() where T : FreshPageModel
         {
-            if (_contactsPage.GetModel ().GetType ().FullName == typeof (T).FullName) {
+            if (_contactsPage.GetModel().GetType().FullName == typeof(T).FullName)
+            {
                 _tabbedNavigationPage.CurrentPage = _contactsPage;
-                return Task.FromResult(_contactsPage.GetModel ());
+                return Task.FromResult(_contactsPage.GetModel());
             }
 
-            if (_quotesPage.GetModel ().GetType ().FullName == typeof (T).FullName) {
+            if (_quotesPage.GetModel().GetType().FullName == typeof(T).FullName)
+            {
                 _tabbedNavigationPage.CurrentPage = _quotesPage;
-                return Task.FromResult(_quotesPage.GetModel ());
+                return Task.FromResult(_quotesPage.GetModel());
             }
 
-            throw new Exception ("Cannot do this");
+            throw new Exception("Cannot do this");
         }
     }
 }

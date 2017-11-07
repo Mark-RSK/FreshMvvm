@@ -73,7 +73,7 @@ namespace FreshMvvm.CoreMethods
             {
                 IFreshNavigationService rootNavigation = FreshIoC.Container.Resolve<IFreshNavigationService>(_currentPageModel.CurrentNavigationServiceName);
 
-                await rootNavigation.PushPage(page, pageModel, modal, animate);
+                await rootNavigation.PushPage(page, modal, animate);
             }
         }
 
@@ -90,7 +90,7 @@ namespace FreshMvvm.CoreMethods
                     _currentPageModel.RaisePageWasPopped();
 
                 IFreshNavigationService rootNavigation = FreshIoC.Container.Resolve<IFreshNavigationService>(navServiceName);
-                await rootNavigation.PopPage(modal, animate);
+                await rootNavigation.Pop(modal, animate);
             }
         }
 
@@ -160,7 +160,7 @@ namespace FreshMvvm.CoreMethods
             }
 
             IFreshNavigationService rootNavigation = FreshIoC.Container.Resolve<IFreshNavigationService>(_currentPageModel.CurrentNavigationServiceName);
-            await rootNavigation.PushPage(navPage, null, true, animate);
+            await rootNavigation.PushPage(navPage, true, animate);
         }
 
         public void SwitchOutRootNavigation(string navigationServiceName)
@@ -182,7 +182,7 @@ namespace FreshMvvm.CoreMethods
 
             var navServiceName = _currentPageModel.PreviousNavigationServiceName;
             IFreshNavigationService rootNavigation = FreshIoC.Container.Resolve<IFreshNavigationService>(navServiceName);
-            await rootNavigation.PopPage(animate);
+            await rootNavigation.Pop(animate);
         }
 
         /// <summary>

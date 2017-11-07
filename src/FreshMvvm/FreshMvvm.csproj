@@ -3,14 +3,14 @@
 		<TargetFramework>netstandard1.4</TargetFramework>
 		<PackageTargetFallback>portable-net45+win8+wpa81+wp8</PackageTargetFallback>
 		<DebugType>full</DebugType>
+		<ReleaseVersion>2.2.0</ReleaseVersion>
 	</PropertyGroup>
 	
 	<PropertyGroup>
 		<PackageId>FreshMvvm</PackageId>
-		<PackageVersion>3.0.0-pre1</PackageVersion>
+		<PackageVersion>3.0.2</PackageVersion>
 		<Authors>Michael Ridland</Authors>
 		<PackageProjectUrl>https://github.com/rid00z/FreshMvvm</PackageProjectUrl>
-		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Description>FreshMvvm is a super light Mvvm Framework designed specifically for Xamarin.Forms. Its designed to be Easy, Simple and Flexible.</Description>
 		<PackageTags>Mvvm, Xamarin.Forms</PackageTags>
 		<PackageReleaseNotes>
@@ -47,7 +47,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="Xamarin.Forms" Version="2.3.4.247" />
 	  <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+	  <PackageReference Include="Xamarin.Forms" Version="2.4.0.38779" />
 	</ItemGroup>
 </Project>

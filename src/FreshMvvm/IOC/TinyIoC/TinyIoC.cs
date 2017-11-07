@@ -1258,7 +1258,7 @@ namespace TinyIoC
 		/// <summary>
 		/// Registration options for "fluent" API when registering multiple implementations
 		/// </summary>
-		public sealed class MultiRegisterOptions
+        public sealed class MultiRegisterOptions : IRegisterOptions
 		{
 			private IEnumerable<IRegisterOptions> _RegisterOptions;
 
@@ -1276,7 +1276,7 @@ namespace TinyIoC
 			/// </summary>
 			/// <returns>RegisterOptions</returns>
 			/// <exception cref="TinyIoCRegistrationException"></exception>
-			public MultiRegisterOptions AsSingleton()
+            public IRegisterOptions AsSingleton()
 			{
 				_RegisterOptions = ExecuteOnAllRegisterOptions(ro => ro.AsSingleton());
 				return this;
@@ -1287,7 +1287,7 @@ namespace TinyIoC
 			/// </summary>
 			/// <returns>MultiRegisterOptions</returns>
 			/// <exception cref="TinyIoCRegistrationException"></exception>
-			public MultiRegisterOptions AsMultiInstance()
+            public IRegisterOptions AsMultiInstance()
 			{
 				_RegisterOptions = ExecuteOnAllRegisterOptions(ro => ro.AsMultiInstance());
 				return this;
@@ -1332,7 +1332,25 @@ namespace TinyIoC
 
 				return newRegisterOptions;
 			}
-		}
+
+            public IRegisterOptions WithWeakReference()
+            {
+                _RegisterOptions = ExecuteOnAllRegisterOptions(ro => ro.WithWeakReference());
+                return this;
+            }
+
+            public IRegisterOptions WithStrongReference()
+            {
+                _RegisterOptions = ExecuteOnAllRegisterOptions(ro => ro.WithStrongReference());
+                return this;
+            }
+
+            public IRegisterOptions UsingConstructor<TRegisterType>(Expression<Func<TRegisterType>> constructor)
+            {
+                _RegisterOptions = ExecuteOnAllRegisterOptions(ro => ro.UsingConstructor(constructor));
+                return this;
+            }
+        }
 		#endregion
 
 		#region Public API

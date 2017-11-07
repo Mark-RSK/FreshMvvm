@@ -44,14 +44,21 @@ namespace FreshMvvm.NavigationContainers
             return new NavigationPage(page);
         }
 
-        public virtual Task PushPage(Page page, FreshPageModel model, bool modal = false, bool animate = true)
+        public virtual Task PushPage(Page page, bool modal = false, bool animate = true)
         {
             return modal ?
                 Navigation.PushModalAsync(CreateContainerPageSafe(page), animate) :
                 Navigation.PushAsync(page, animate);
         }
 
-        public virtual Task PopPage(bool modal = false, bool animate = true)
+        public virtual Task PushPageModel<TPageModel>(bool modal = false, bool animate = true) where TPageModel : FreshPageModel
+        {
+            Page page = FreshPageModelResolver.ResolvePageModel<TPageModel>();
+
+            return PushPage(page, modal, animate);
+        }
+
+        public virtual Task Pop(bool modal = false, bool animate = true)
         {
             return modal ?
                 Navigation.PopModalAsync(animate) :
